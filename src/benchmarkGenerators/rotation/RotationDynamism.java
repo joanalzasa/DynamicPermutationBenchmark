@@ -5,6 +5,7 @@
  */
 package benchmarkGenerators.rotation;
 
+import java.beans.ConstructorProperties;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,26 +18,29 @@ import tools.ArrayUtils;
 public class RotationDynamism extends Dynamism{
 
 	String distanceType;
-	static int permSize;
+	int numberOfJobs;
 	int[][] permutations;
 	
-	
-	public RotationDynamism(int size, int changes, String rate, int distance, String type, double averageTimeSpace){
+	// Constructor
+	public RotationDynamism( int changes, String band, int distance, double averageTimeSpace,
+			int size, String type){
 		super();
-		permSize = size;
+		
 		numberOfChanges = changes;
-		frequency = rate;
+		frequency = band;
 		magnitude = distance;
-		distanceType = type;
 		lambda = averageTimeSpace;
-
-		this.permutations = new int[numberOfChanges][permSize];
+		
+		distanceType = type;
+		numberOfJobs = size;
+		permutations = new int[numberOfChanges][numberOfJobs];
 	}
 	
 
-	// Abstract method
+	// Abstract methods
 	@Override
 	public void generateDynamism() {
+		// Time of changes
 		if (frequency.contains("periodical")) {
 			generatePeriodicalChanges();
 		}else if(frequency.contains("exponential")){
@@ -44,8 +48,8 @@ public class RotationDynamism extends Dynamism{
 		}
 		
 		// Generate identity permutation
-		int[] identityPermutation = new int[permSize];
-		for (int i = 0; i < permSize; i++) {
+		int[] identityPermutation = new int[numberOfJobs];
+		for (int i = 0; i < numberOfJobs; i++) {
 			identityPermutation[i] = i;
 		}
 		
@@ -53,23 +57,23 @@ public class RotationDynamism extends Dynamism{
 		if(distanceType.contains("cayley")){
 			for (int j = 0; j < numberOfChanges; j++) {
 				permutations[j] = changeIdentityPermutation(identityPermutation, magnitude);
-				System.out.println("Cayley distance: " + tools.ArrayUtils.getCayleyDistance(permutations[j], identityPermutation));
+//				System.out.println("Cayley distance: " + tools.ArrayUtils.getCayleyDistance(permutations[j], identityPermutation));
 				identityPermutation = permutations[j];
 			}
 		}	
 	}
 	
 	public int[] changeIdentityPermutation(int[] identity, int distance){
-		int k = permSize - (int) distance;
+		int k = numberOfJobs - (int) distance;
 		int[] sigma = sample(k);
 		int[] newIdentity = compose(identity, sigma);
 		return newIdentity;
 	}
 	
 	public int[] sample(int k) {
-		int[] newsol = new int[permSize];
+		int[] newsol = new int[numberOfJobs];
 		
-		int[] X = generateRandomBinaryArray(permSize,k);
+		int[] X = generateRandomBinaryArray(numberOfJobs,k);
 		generatePermutationFromX(X,newsol);
 
 		return newsol;
@@ -92,11 +96,11 @@ public class RotationDynamism extends Dynamism{
 	public int[] generatePermutationFromX(int[] X, int[] sigma){
 		Random rand = new Random();
 		int random, aux,i;
-		for (i = 0; i < permSize; i++)
+		for (i = 0; i < numberOfJobs; i++)
 			sigma[i]=i;
 		for (i = 0; i < X.length; i++){
 			if (X[i]==1){
-				random = i + 1 + rand.nextInt(permSize-1-i); // random=[i+1,n-1]
+				random = i + 1 + rand.nextInt(numberOfJobs-1-i); // random=[i+1,n-1]
 				aux = sigma[random];
 				sigma[random] = sigma[i];
 				sigma[i] = aux;
@@ -115,8 +119,8 @@ public class RotationDynamism extends Dynamism{
 	
 	public void printDynamicInstance(){
 		DecimalFormat df = new DecimalFormat("#.####");
-		System.out.println(frequency);
-		for(int i = 0; i < numberOfChanges; i++){
+		System.out.println(numberOfChanges);
+		for(int i = 0; i < changeTime.length; i++){
 			System.out.println(df.format(changeTime[i]) + ";" + ArrayUtils.tableToString(permutations[i])); 
 		}
 	}
