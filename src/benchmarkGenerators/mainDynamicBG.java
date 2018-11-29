@@ -17,9 +17,9 @@ public class mainDynamicBG{
 	public static void main(String[] args) throws IOException{
 		
 		// DYNAMISM PARAMETERS:
-//		String changeType = "rotation";
+		String changeType = "rotation";
 //		String changeType = "insertRemove";
-		String changeType = "modification";
+//		String changeType = "modification";
 		
 		// GENERAL PARAMETERS:
 		int jobs = 20;
@@ -29,27 +29,33 @@ public class mainDynamicBG{
 		String changeFrequency = "exponential";
 		double lambda = 1;
 		int changeMagnitude = 5;
-		String resultsPath = "./inputData/dynamismGenerator";
+		String resultsPath = "./inputData/dynamismGenerator/";
 		String saveAs;
 		
 		long startTime = System.currentTimeMillis();
 		
 		// Benchmark generator
 		if(changeType.contains("rotation")){
+			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Cr-M" + changeMagnitude +".txt";
 			String distanceType = "cayley";
 			Dynamism changeInstance = new RotationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, jobs, distanceType);
 			changeInstance.generateDynamism();
 			changeInstance.printDynamicInstance();
+			changeInstance.createDynamicInstance(resultsPath, saveAs);
 		}else if(changeType.contains("insert")){
+			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Ci-M" + changeMagnitude +".txt";
 			int changingAmount = 4;
 			Dynamism changeInstance = new InsertionEliminationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingAmount, machines);
 			changeInstance.generateDynamism();
 			changeInstance.printDynamicInstance();
+			changeInstance.createDynamicInstance(resultsPath, saveAs);
 		}else if(changeType.contains("modification")){
+			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Cm-M" + changeMagnitude +".txt";
 			double changingPercentage = 0.4;
 			Dynamism changeInstance = new ModificationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingPercentage, jobs, machines);
 			changeInstance.generateDynamism();
 			changeInstance.printDynamicInstance();
+			changeInstance.createDynamicInstance(resultsPath, saveAs);
 		}
 		
 		

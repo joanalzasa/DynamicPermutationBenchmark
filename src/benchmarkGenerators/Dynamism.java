@@ -20,6 +20,7 @@ public abstract class Dynamism {
 	// Abstract methods
 	public abstract void generateDynamism();
 	public abstract void printDynamicInstance();
+	public abstract void createDynamicInstance(String resultsPath, String saveAs);
 
 	// Other methods
 	public void generatePeriodicalChanges(){
@@ -50,4 +51,5 @@ public abstract class Dynamism {
 		}
 		return normalisedChangeTimes;
 	}
+	
 }

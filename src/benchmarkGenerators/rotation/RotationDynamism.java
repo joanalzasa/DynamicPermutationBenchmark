@@ -6,6 +6,9 @@
 package benchmarkGenerators.rotation;
 
 import java.beans.ConstructorProperties;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,6 +126,24 @@ public class RotationDynamism extends Dynamism{
 		for(int i = 0; i < changeTime.length; i++){
 			System.out.println(df.format(changeTime[i]) + ";" + ArrayUtils.tableToString(permutations[i])); 
 		}
+	}
+
+
+	@Override
+	public void createDynamicInstance(String path, String saveAs) {
+		try {
+			BufferedWriter br = new BufferedWriter(new FileWriter(path + "" + saveAs));
+			DecimalFormat df = new DecimalFormat("#.####");
+			String out = numberOfChanges + ";" + magnitude + "\n";
+			for(int i = 0; i < changeTime.length; i++){
+				out += df.format(changeTime[i]) + ";" + ArrayUtils.tableToString(permutations[i]) + "\n"; 
+			}
+			br.write(out);
+	        br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 }
