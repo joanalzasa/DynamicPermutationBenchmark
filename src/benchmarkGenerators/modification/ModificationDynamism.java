@@ -66,15 +66,15 @@ public class ModificationDynamism extends Dynamism{
 		try {
 			BufferedWriter br = new BufferedWriter(new FileWriter(path + "" + saveAs));
 			DecimalFormat df = new DecimalFormat("#.####");
-			String out = numberOfChanges + ";" + magnitude + "\n";
+			String output = numberOfChanges + ";" + magnitude + "\n";
 			for(int i = 0; i < changeTime.length; i++){
-				out += df.format(changeTime[i]) + ";";
+				output += df.format(changeTime[i]) + ";";
 				for (int j = 0; j < changingAmount; j++) {
-					out += ArrayUtils.tableToString(modifyingLocation[i][j]) + "|";
+					output += ArrayUtils.tableToString(modifyingLocation[i][j]) + "|";
 				}
-				out += "\n"; 
+				output += "\n"; 
 			}
-			br.write(out);
+			br.write(output);
 	        br.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

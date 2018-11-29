@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -60,7 +61,7 @@ public class RotationDynamism extends Dynamism{
 		if(distanceType.contains("cayley")){
 			for (int j = 0; j < numberOfChanges; j++) {
 				permutations[j] = changeIdentityPermutation(identityPermutation, magnitude);
-//				System.out.println("Cayley distance: " + tools.ArrayUtils.getCayleyDistance(permutations[j], identityPermutation));
+				System.out.println("Cayley distance: " + tools.ArrayUtils.getCayleyDistance(permutations[j], identityPermutation));
 				identityPermutation = permutations[j];
 			}
 		}	
@@ -84,15 +85,17 @@ public class RotationDynamism extends Dynamism{
 	
 	// Create a binary array "X" that contains 1 "Cayley distance" times
 	public int[] generateRandomBinaryArray(int n, int k){
-		List<Integer> solution = new ArrayList<Integer>(Collections.nCopies(n-1, 1));
-		for (int i = 0; i < k -1; i++) {
-		    solution.set(i,0);
+		int[] binaryArray = new int[n-1];
+		Arrays.fill(binaryArray, 1);
+		
+		for (int i = 0; i < k - 1; i++) {
+			binaryArray[i] = 0;
 		}
-		Collections.shuffle(solution);
+		shuffleArray(binaryArray);
 		
 		int[] X = new int[n-1];
-		for(int i = 0; i < solution.size(); i++) 
-			X[i] = solution.get(i);
+		for(int i = 0; i < binaryArray.length; i++) 
+			X[i] = binaryArray[i];
 		return X;
 	}
 	
@@ -112,7 +115,20 @@ public class RotationDynamism extends Dynamism{
 		return sigma;
 	}
 	
-	private int[] compose(int[] identity, int[] sigma) {
+	 // Implementing Fisher–Yates shuffle
+	public static void shuffleArray(int[] ar){
+	    // If running on Java 6 or older, use `new Random()` on RHS here
+	    Random rnd = new Random();
+	    for (int i = ar.length - 1; i > 0; i--){
+	      int index = rnd.nextInt(i + 1);
+	      // Simple swap
+	      int a = ar[index];
+	      ar[index] = ar[i];
+	      ar[i] = a;
+	    }
+	}
+	
+	public static int[] compose(int[] identity, int[] sigma) {
 		int[] composedPerm = new int[identity.length];
 		for (int i = 0; i < identity.length; i++) {
 			composedPerm[i] = identity[sigma[i]];
@@ -134,14 +150,13 @@ public class RotationDynamism extends Dynamism{
 		try {
 			BufferedWriter br = new BufferedWriter(new FileWriter(path + "" + saveAs));
 			DecimalFormat df = new DecimalFormat("#.####");
-			String out = numberOfChanges + ";" + magnitude + "\n";
+			String output = numberOfChanges + ";" + magnitude + "\n";
 			for(int i = 0; i < changeTime.length; i++){
-				out += df.format(changeTime[i]) + ";" + ArrayUtils.tableToString(permutations[i]) + "\n"; 
+				output += df.format(changeTime[i]) + ";" + ArrayUtils.tableToString(permutations[i]) + "\n"; 
 			}
-			br.write(out);
+			br.write(output);
 	        br.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}
