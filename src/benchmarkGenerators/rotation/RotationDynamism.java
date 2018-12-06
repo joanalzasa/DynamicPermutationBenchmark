@@ -5,15 +5,11 @@
  */
 package benchmarkGenerators.rotation;
 
-import java.beans.ConstructorProperties;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import benchmarkGenerators.*;
@@ -61,7 +57,7 @@ public class RotationDynamism extends Dynamism{
 		if(distanceType.contains("cayley")){
 			for (int j = 0; j < numberOfChanges; j++) {
 				permutations[j] = changeIdentityPermutation(identityPermutation, magnitude);
-				System.out.println("Cayley distance: " + tools.ArrayUtils.getCayleyDistance(permutations[j], identityPermutation));
+//				System.out.println("Cayley distance: " + tools.PermutationUtils.getCayleyDistance(permutations[j], identityPermutation));
 				identityPermutation = permutations[j];
 			}
 		}	

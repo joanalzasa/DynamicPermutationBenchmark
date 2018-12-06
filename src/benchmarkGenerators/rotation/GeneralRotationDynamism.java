@@ -5,19 +5,12 @@
  */
 package benchmarkGenerators.rotation;
 
-import java.beans.ConstructorProperties;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 import benchmarkGenerators.*;
-import tools.ArrayUtils;
 
 public class GeneralRotationDynamism extends Dynamism{
 

@@ -3,11 +3,11 @@
  *
  * Joan Alza Santos
  */
-package benchmarkGenerators;
+package launchers;
 
 import java.io.IOException;
-import java.util.Random;
 
+import benchmarkGenerators.Dynamism;
 import benchmarkGenerators.insertionElimination.InsertionEliminationDynamism;
 import benchmarkGenerators.modification.ModificationDynamism;
 import benchmarkGenerators.rotation.RotationDynamism;
@@ -27,7 +27,7 @@ public class mainDynamicBG{
 		int numOfChanges = 3;
 //		String changeFrequency = "periodical";
 		String changeFrequency = "exponential";
-		double lambda = 1;
+		double lambda = 1.5;
 		int changeMagnitude = 5;
 		String resultsPath = "./inputData/dynamismGenerator/";
 		String saveAs;
@@ -45,7 +45,7 @@ public class mainDynamicBG{
 			Dynamism changeInstance = new RotationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, jobs, distanceType);
 			changeInstance.generateDynamism();
 			changeInstance.printDynamicInstance();
-			changeInstance.createDynamicInstance(resultsPath, saveAs);
+//			changeInstance.createDynamicInstance(resultsPath, saveAs);
 		}else if(changeType.contains("insert")){
 			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Ci-M" + changeMagnitude;
 			if (changeFrequency.contains("periodical"))

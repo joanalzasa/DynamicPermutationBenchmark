@@ -4,10 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Random;
 
 import benchmarkGenerators.Dynamism;
-import tools.ArrayUtils;
 
 public class GeneralModificationDynamism extends Dynamism{
 

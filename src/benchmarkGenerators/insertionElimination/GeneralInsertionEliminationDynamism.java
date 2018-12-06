@@ -4,11 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.Random;
 
 import benchmarkGenerators.Dynamism;
-import tools.ArrayUtils;
 
 public class GeneralInsertionEliminationDynamism extends Dynamism {
 
