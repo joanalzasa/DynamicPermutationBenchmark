@@ -6,68 +6,82 @@
 package launchers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import benchmarkGenerators.DynamicFSP;
 import benchmarkGenerators.Dynamism;
-import benchmarkGenerators.insertionElimination.InsertionEliminationDynamism;
-import benchmarkGenerators.modification.ModificationDynamism;
-import benchmarkGenerators.rotation.RotationDynamism;
+import benchmarkGenerators.InsertionEliminationDynamism;
+import benchmarkGenerators.RotationDynamism;
+import benchmarkGenerators.ModificationDynamism;
+import problems.FSP;
 
 public class mainDynamicBG{
 
 	public static void main(String[] args) throws IOException{
 		
+		// STATIC PROBLEM
+		String staticProblemPath = "./inputData/instances/FSP/tai20_5_0.fsp";
+		
 		// DYNAMISM PARAMETERS:
-		String changeType = "rotation";
-//		String changeType = "insertRemove";
+//		String changeType = "rotation";
+		String changeType = "insertRemove";
 //		String changeType = "modification";
 		
 		// GENERAL PARAMETERS:
-		int jobs = 20;
-		int machines = 50;
-		int numOfChanges = 3;
 //		String changeFrequency = "periodical";
-		String changeFrequency = "exponential";
-		double lambda = 1.5;
+		int numOfChanges = 3;
+		String changeFrequency = "poisson";
+		double lambda = 3;
+		
 		int changeMagnitude = 5;
-		String resultsPath = "./inputData/dynamismGenerator/";
+		String resultsPath = "./inputData/dynamicInstances/";
 		String saveAs;
 		
 		long startTime = System.currentTimeMillis();
 		
 		// Benchmark generator
+		FSP PFSP = new FSP();
+		PFSP.read(staticProblemPath);
+		
+		List<List<String>> list = new ArrayList<List<String>>();
+		for(int i = 1; i < 20; i++){
+			List<String> sublist = new ArrayList<String>();
+		     for (int j = 0; j < 6; j++) {
+		    	sublist.add(i + "_" + j);
+			}
+		     list.add(sublist);
+		  }
+		System.out.println(list.get(2).toString());
+		list.remove(2);
+		System.out.println(list.get(2).toString());
+		
+		Dynamism dynamicInstance;
+		saveAs = "DFSP-" + PFSP.jobs + "x" + PFSP.machines + "-";
 		if(changeType.contains("rotation")){
-			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Cr-M" + changeMagnitude;
+			saveAs += "Cr-M" + changeMagnitude;	
+			dynamicInstance = new RotationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, PFSP, "cayley");
 			if (changeFrequency.contains("periodical"))
-				saveAs += "-Tp.txt";
+				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
 			else
-				saveAs += "-T" + lambda +".txt";
-			String distanceType = "cayley";
-			Dynamism changeInstance = new RotationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, jobs, distanceType);
-			changeInstance.generateDynamism();
-			changeInstance.printDynamicInstance();
-//			changeInstance.createDynamicInstance(resultsPath, saveAs);
-		}else if(changeType.contains("insert")){
-			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Ci-M" + changeMagnitude;
+				saveAs += "-T" + dynamicInstance.numberOfChanges +".dfsp";
+			
+			dynamicInstance.generateDynamism();
+			dynamicInstance.printDynamicInstance();
+			dynamicInstance.getDynamicProcessingTimes();
+			dynamicInstance.createDynamicInstance(resultsPath, saveAs);
+		}else if(changeType.contains("insertRemove")){
+			saveAs += "Ci-M" + changeMagnitude;	
+			int changingAmount = 1;
+			dynamicInstance = new InsertionEliminationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingAmount, PFSP);
 			if (changeFrequency.contains("periodical"))
-				saveAs += "-Tp.txt";
+				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
 			else
-				saveAs += "-T" + lambda +".txt";
-			int changingAmount = 4;
-			Dynamism changeInstance = new InsertionEliminationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingAmount, machines);
-			changeInstance.generateDynamism();
-			changeInstance.printDynamicInstance();
-			changeInstance.createDynamicInstance(resultsPath, saveAs);
-		}else if(changeType.contains("modification")){
-			saveAs = "dynProfile-P" + jobs + "x" + machines + "-Cm-M" + changeMagnitude;
-			if (changeFrequency.contains("periodical"))
-				saveAs += "-Tp.txt";
-			else
-				saveAs += "-T" + lambda +".txt";
-			double changingPercentage = 0.4;
-			Dynamism changeInstance = new ModificationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingPercentage, jobs, machines);
-			changeInstance.generateDynamism();
-			changeInstance.printDynamicInstance();
-			changeInstance.createDynamicInstance(resultsPath, saveAs);
+				saveAs += "-T" + dynamicInstance.numberOfChanges +".dfsp";	
+			dynamicInstance.generateDynamism();
+			dynamicInstance.printDynamicInstance();
+			dynamicInstance.getDynamicProcessingTimes();
+			dynamicInstance.createDynamicInstance(resultsPath, saveAs);
 		}
 		
 		

@@ -39,7 +39,7 @@ import java.util.Random;
  * 
  *
  */
-public enum RandomNumberGenerator {	
+public enum ProbabilityDistributions {	
 	
 	Poisson {
 		@Override
@@ -134,10 +134,10 @@ public enum RandomNumberGenerator {
 	public static final void main(String[] args){
 		//Testing 
 		
-		RandomNumberGenerator testStat = Exponential;
-		double lambda = 1.0;
-		System.out.println("Testing stat: " + testStat+ " with lambda: " + lambda);
-		for (int i = 0; i < 1000; i++){
+		ProbabilityDistributions testStat = Poisson;
+		double lambda = 1000.0;
+		System.out.println("Testing stat: " + testStat+ ", with lambda: " + lambda);
+		for (int i = 0; i < 1; i++){
 			System.out.println(testStat.getRandom(lambda));
 		}				
 	}

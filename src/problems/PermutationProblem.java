@@ -2,16 +2,14 @@ package problems;
 
 import java.util.ArrayList;
 
-import representations.Permutation;
-import tools.PermutationUtils;
+public abstract class PermutationProblem implements OptimisationProblem {
 
-public abstract class PermutationProblem<E> implements OptimisationProblem<E> {
-
-	int problemSize;
-    double globalOptimum;
+	public int problemSize;
+    public double globalOptimum;
 	
     // Abstract methods
 	public abstract void read(String fileName);
-	public abstract double evaluate(ArrayList<E> population);
+	public abstract double evaluate(ArrayList<?> population);
 
+	
 }

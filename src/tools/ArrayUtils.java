@@ -3,6 +3,7 @@ package tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class ArrayUtils {
 
@@ -143,6 +144,19 @@ public class ArrayUtils {
 				rval = array[i];
 
 		return rval;
+	}
+	
+	 // Implementing Fisher–Yates shuffle
+	public static void shuffleArray(int[] ar){
+	    // If running on Java 6 or older, use `new Random()` on RHS here
+	    Random rnd = new Random();
+	    for (int i = ar.length - 1; i > 0; i--){
+	      int index = rnd.nextInt(i + 1);
+	      // Simple swap
+	      int a = ar[index];
+	      ar[index] = ar[i];
+	      ar[i] = a;
+	    }
 	}
 	
 }

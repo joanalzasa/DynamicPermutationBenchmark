@@ -96,4 +96,12 @@ public class PermutationUtils {
 		}
 		return 0;
 	}
+	
+	public static int[] compose(int[] identity, int[] sigma) {
+		int[] composedPerm = new int[identity.length];
+		for (int i = 0; i < identity.length; i++) {
+			composedPerm[i] = identity[sigma[i]];
+		}
+		return composedPerm;
+	}
 }

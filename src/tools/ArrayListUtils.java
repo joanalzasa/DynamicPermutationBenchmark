@@ -17,12 +17,28 @@ public class ArrayListUtils {
 			list.add(element);
 	}
 	
-	public static double mean(ArrayList<Double> vals){
+	public static <E> ArrayList<ArrayList<E>> transpose(ArrayList<ArrayList<E>> matrixIn) {
+		ArrayList<ArrayList<E>> matrixOut = new ArrayList<ArrayList<E>>();
+	    if (!matrixIn.isEmpty()) {
+	        int noOfElementsInList = matrixIn.get(0).size();
+	        for (int i = 0; i < noOfElementsInList; i++) {
+	        	ArrayList<E> col = new ArrayList<E>();
+	            for (ArrayList<E> row : matrixIn) {
+	                col.add(row.get(i));
+	            }
+	            matrixOut.add(col);
+	        }
+	    }
+
+	    return matrixOut;
+	}
+	
+	public static <E> double mean(ArrayList<E> vals){
 		double sum = 0;
 		if(!vals.isEmpty()) {
-		    for (double d : vals)
-		        sum += d;
-		    return sum / vals.size();
+		    for (int i = 0; i < vals.size() ; i++)
+				sum += Double.valueOf(vals.get(i).toString());
+		    return sum / (double) vals.size();
 	    }
 	  return sum;
 	}

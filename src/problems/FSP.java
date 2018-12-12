@@ -5,16 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import representations.RandomKey;
-import tools.PermutationUtils;
+public class FSP extends PermutationProblem implements OptimisationProblem{
 
-public class FSP extends PermutationProblem<RandomKey> implements OptimisationProblem <RandomKey>{
-
-	int jobs;
-	int machines;
-	ArrayList<ArrayList<Integer>> processingTimes;
+	public int jobs;
+	public int machines;
+	public ArrayList<ArrayList<Integer>> processingTimes;
 	int seed;
 	
 	@SuppressWarnings("resource")
@@ -52,16 +48,16 @@ public class FSP extends PermutationProblem<RandomKey> implements OptimisationPr
 				}
 				counter++;
 			}
+			
+			// Initialisation
+			problemSize = jobs;
 		} catch (IOException e) {
 			System.out.println("Couldn't find file: " + fileName);
 		}
-
-		// Other initialisation
-		problemSize = jobs;
 	}
 	
 	@Override
-	public double evaluate(ArrayList<RandomKey> population) {
+	public double evaluate(ArrayList<?> population) {
 //		int m_machines = processingTimes.length;
 //		int m_jobs = processingTimes[0].length;
 //		int[] m_timeTable = new int[m_machines];
@@ -102,7 +98,13 @@ public class FSP extends PermutationProblem<RandomKey> implements OptimisationPr
 		return 0;
 	}
 
+	public int getSeed() {
+		return seed;
+	}
 
+	public void setSeed(int seed) {
+		this.seed = seed;
+	}
 
 
 }
