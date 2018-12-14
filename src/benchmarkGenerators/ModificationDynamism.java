@@ -4,15 +4,19 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import problems.FSP;
+import tools.ArrayListUtils;
 import tools.ArrayUtils;
 
 public class ModificationDynamism extends DynamicFSP{
 
+	FSP dynamicProblem;
 	int changingAmount;
-	int[][][] modifyingLocation;
+	ArrayList<ArrayList<int[]>> modifyingLocation;
 	
 	public ModificationDynamism(int changes, String band, int multiplier, double intensity,
 			double modificationPercentage, FSP problem){
@@ -20,6 +24,7 @@ public class ModificationDynamism extends DynamicFSP{
 		numberOfChanges = changes;
 		frequency = band;
 		lambda = intensity;
+		staticSequenceTimes = new ArrayList<>();
 		// Time of changes
 		if (frequency.contains("periodical")) {
 			generatePeriodicalChanges();
@@ -27,37 +32,57 @@ public class ModificationDynamism extends DynamicFSP{
 			generatePoissonProcess();
 		}
 		magnitude = multiplier;
-		
 		schedulingProblem = problem;
-		changingAmount = (int) Math.round((double)schedulingProblem.getJobs() * schedulingProblem.getMachines() * modificationPercentage);
-		modifyingLocation = new int[numberOfChanges][changingAmount][2];
+		
+		dynamicProblem = problem;
+		changingAmount = (int) Math.round(schedulingProblem.jobs * schedulingProblem.machines * modificationPercentage);
+		
+		// Initialise changeables
+		modifyingLocation = new ArrayList<>();
+		dynamicProcessingTimes = new ArrayList<>();
 	}
 
 	@Override
 	public void generateDynamism() {		
 		// Generate random locations of the cost-matrix to introduce the dynamism
 		for (int i = 0; i < numberOfChanges; i++) {
+			ArrayList<int[]> modifiyingPositions = new ArrayList<>();
 			for (int j = 0; j < changingAmount; j++) {
-				modifyingLocation[i][j][0] = new Random().nextInt(schedulingProblem.getJobs());
-				modifyingLocation[i][j][1] = new Random().nextInt(schedulingProblem.getMachines());
+				int[] modifications = {new Random().nextInt(schedulingProblem.machines), new Random().nextInt(schedulingProblem.jobs)};
+				modifiyingPositions.add(modifications);
 			}
+			modifyingLocation.add(modifiyingPositions);
 		}
 	}
 	
 	@Override
 	public void getDynamicProcessingTimes() {
-		
+		// Get original processing times and store it on a 2 dimensional array
+		dynamicProcessingTimes.add(ArrayListUtils.deepCopy((dynamicProblem.processingTimes)));
+				
+		// Get dynamic processing times
+		for (int i = 0; i < numberOfChanges; i++) {
+			ArrayList<ArrayList<Integer>> tranposedProcessingTimes = ArrayListUtils.transpose(dynamicProblem.processingTimes);
+			for ( int j = 0; j < modifyingLocation.get(i).size(); j++){
+				int machineIndex = modifyingLocation.get(i).get(j)[0];
+				int jobIndex = modifyingLocation.get(i).get(j)[1];
+				int[] jobs = ArrayUtils.arrayListToIntegerArray(tranposedProcessingTimes.get(jobIndex));
+				double sdJob = ArrayUtils.stdev(ArrayUtils.copyFromIntArray(jobs));
+				int newPT = Math.abs((int)((defaultR.nextGaussian() * sdJob * magnitude) + dynamicProblem.processingTimes.get(machineIndex).get(j)));
+				dynamicProblem.processingTimes.get(machineIndex).set(jobIndex, newPT);
+			}
+			dynamicProcessingTimes.add(ArrayListUtils.deepCopy((dynamicProblem.processingTimes)));
+		}
 	}
 
 	@Override
 	public void printDynamicInstance() {
 		DecimalFormat df = new DecimalFormat("#.####");
 		System.out.println(numberOfChanges + ";" + magnitude);
-		for(int i = 0; i < staticSequenceTimes.length; i++){
-			System.out.print(df.format(staticSequenceTimes[i]) + ";");
-			for (int j = 0; j < changingAmount; j++) {
-				System.out.print("(" + ArrayUtils.tableToString(modifyingLocation[i][j]) + ")");
-			}
+		for(int i = 1; i < staticSequenceTimes.size(); i++){
+			System.out.print(df.format(staticSequenceTimes.get(i)) + ";");
+			for (int j = 0; j < modifyingLocation.get(i-1).size(); j++)
+				System.out.print(Arrays.toString(modifyingLocation.get(i-1).get(j)));
 			System.out.println();
 		}
 	}
@@ -67,18 +92,19 @@ public class ModificationDynamism extends DynamicFSP{
 		try {
 			BufferedWriter br = new BufferedWriter(new FileWriter(path + "" + saveAs));
 			DecimalFormat df = new DecimalFormat("#.####");
-			String output = numberOfChanges + ";" + magnitude + "\n";
-			for(int i = 0; i < staticSequenceTimes.length; i++){
-				output += df.format(staticSequenceTimes[i]) + ";";
-				for (int j = 0; j < changingAmount; j++) {
-					output += ArrayUtils.tableToString(modifyingLocation[i][j]) + "|";
-				}
-				output += "\n"; 
+			String output = "Number of changes, number of job, number of machines \n";
+			output += numberOfChanges + "\t\t\t" + schedulingProblem.jobs + "\t\t\t" + schedulingProblem.machines + "\n";
+			for (int i = 0; i < staticSequenceTimes.size(); i++){
+				output += "Change time:" + df.format(staticSequenceTimes.get(i)) +"\n Processing times: \n";
+				for (int j = 0; j < dynamicProcessingTimes.get(i).size(); j++) {
+					for (int k = 0; k < dynamicProcessingTimes.get(i).get(j).size(); k++)
+						output += dynamicProcessingTimes.get(i).get(j).get(k) + "\t";
+					output += "\n";
+				} 
 			}
 			br.write(output);
 	        br.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}

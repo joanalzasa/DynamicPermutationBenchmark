@@ -1,7 +1,5 @@
 package problems.dynamism;
 
-import representations.Permutation;
-
 public abstract class Dynamism {
 
 	String dynProfilePath;

@@ -6,10 +6,7 @@
 package launchers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import benchmarkGenerators.DynamicFSP;
 import benchmarkGenerators.Dynamism;
 import benchmarkGenerators.InsertionEliminationDynamism;
 import benchmarkGenerators.RotationDynamism;
@@ -25,16 +22,16 @@ public class mainDynamicBG{
 		
 		// DYNAMISM PARAMETERS:
 //		String changeType = "rotation";
-		String changeType = "insertRemove";
-//		String changeType = "modification";
+//		String changeType = "insertRemove";
+		String changeType = "modification";
 		
 		// GENERAL PARAMETERS:
 //		String changeFrequency = "periodical";
-		int numOfChanges = 3;
+		int numOfChanges = 2;
 		String changeFrequency = "poisson";
 		double lambda = 3;
 		
-		int changeMagnitude = 5;
+		int changeMagnitude = 1;
 		String resultsPath = "./inputData/dynamicInstances/";
 		String saveAs;
 		
@@ -43,18 +40,6 @@ public class mainDynamicBG{
 		// Benchmark generator
 		FSP PFSP = new FSP();
 		PFSP.read(staticProblemPath);
-		
-		List<List<String>> list = new ArrayList<List<String>>();
-		for(int i = 1; i < 20; i++){
-			List<String> sublist = new ArrayList<String>();
-		     for (int j = 0; j < 6; j++) {
-		    	sublist.add(i + "_" + j);
-			}
-		     list.add(sublist);
-		  }
-		System.out.println(list.get(2).toString());
-		list.remove(2);
-		System.out.println(list.get(2).toString());
 		
 		Dynamism dynamicInstance;
 		saveAs = "DFSP-" + PFSP.jobs + "x" + PFSP.machines + "-";
@@ -74,6 +59,18 @@ public class mainDynamicBG{
 			saveAs += "Ci-M" + changeMagnitude;	
 			int changingAmount = 1;
 			dynamicInstance = new InsertionEliminationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingAmount, PFSP);
+			if (changeFrequency.contains("periodical"))
+				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
+			else
+				saveAs += "-T" + dynamicInstance.numberOfChanges +".dfsp";	
+			dynamicInstance.generateDynamism();
+			dynamicInstance.printDynamicInstance();
+			dynamicInstance.getDynamicProcessingTimes();
+			dynamicInstance.createDynamicInstance(resultsPath, saveAs);
+		}else if(changeType.contains("modification")){
+			saveAs += "Cm-M" + changeMagnitude;	
+			double changingPercentage = 0.2;
+			dynamicInstance = new ModificationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingPercentage, PFSP);
 			if (changeFrequency.contains("periodical"))
 				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
 			else

@@ -14,13 +14,14 @@ import java.util.Arrays;
 import java.util.Random;
 
 import problems.FSP;
+import tools.ArrayListUtils;
 import tools.ArrayUtils;
 import tools.PermutationUtils;
 
 public class RotationDynamism extends DynamicFSP{
 
 	String distanceType;
-	int[][] permutations;
+	ArrayList<ArrayList<Integer>> permutations;
 	
 	// Constructor
 	public RotationDynamism( int changes, String band, int distance, double intensity,
@@ -30,19 +31,20 @@ public class RotationDynamism extends DynamicFSP{
 		numberOfChanges = changes;
 		frequency = band;
 		lambda = intensity;
+		staticSequenceTimes = new ArrayList<>();;
 		// Time of changes
 		if (frequency.contains("periodical"))
 			generatePeriodicalChanges();
 		else if(frequency.contains("poisson"))
-			generatePoissonProcess();
+			generatePoissonProcess();	
 		magnitude = distance;
+		schedulingProblem = problem;
 				
 		distanceType = type;
-		schedulingProblem = problem;
 		
 		// Initialise changeables
-		permutations = new int[numberOfChanges + 1][schedulingProblem.jobs];
-		dynamicProcessingTimes = new int[numberOfChanges + 1][schedulingProblem.machines][schedulingProblem.jobs];
+		permutations = new ArrayList<>();
+		dynamicProcessingTimes = new ArrayList<>();
 	}
 	
 
@@ -50,30 +52,31 @@ public class RotationDynamism extends DynamicFSP{
 	@Override
 	public void generateDynamism() {		
 		// Generate identity permutation
+		ArrayList<Integer> permutation = new ArrayList<>();
 		for (int i = 0; i < schedulingProblem.jobs; i++) 
-			permutations[0][i] = i;
+			permutation.add(i);
+		permutations.add(permutation);
 		
 		// Disturb identity permutation by distance
 		if(distanceType.contains("cayley")){
-			for (int j = 1; j < permutations.length; j++)
-				permutations[j] = changeIdentityPermutation(permutations[0], magnitude);
+			for (int j = 0; j < numberOfChanges; j++){
+				permutations.add(ArrayListUtils.arrayToArrayList(changeIdentityPermutation(ArrayUtils.arrayListToIntegerArray(permutations.get(j)), magnitude))); 
+//				System.out.println("Cayley distance: " + tools.PermutationUtils.getCayleyDistance(ArrayUtils.arrayListToIntegerArray(permutations.get( j+1 )), ArrayUtils.arrayListToIntegerArray(permutation)));
+			}
+				
 		}	
 	}
 	
-	public void getDynamicProcessingTimes(){
-		// Initialise variables
-		ArrayList<ArrayList<Integer>> processingTimesAL = schedulingProblem.processingTimes;
-		
-		// Get original processing times and store it on a 2 dimensional array
-		for (int i = 0; i < processingTimesAL.size() ; i++)
-			dynamicProcessingTimes[0][i] = ArrayUtils.arrayListToIntegerArray(processingTimesAL.get(i));
+	public void getDynamicProcessingTimes(){		
+		// Invert processing times to distribute it by jobs
+		ArrayList<ArrayList<Integer>> transposedProcessingT = ArrayListUtils.transpose(schedulingProblem.processingTimes);
 		
 		// Get dynamic processing times
-		for (int i = 1; i < dynamicProcessingTimes.length; i++) {
-			for (int j = 0; j < schedulingProblem.machines; j++) {
-				for (int k = 0; k < schedulingProblem.jobs; k++)
-					dynamicProcessingTimes[i][j][k] = dynamicProcessingTimes[0][j][permutations[i][k]];			
-			}
+		for (int i = 0; i < permutations.size(); i++) {
+			ArrayList<ArrayList<Integer>> processingT = new ArrayList<>();
+			for (int j = 0; j < schedulingProblem.jobs; j++)
+				processingT.add(transposedProcessingT.get(permutations.get(i).indexOf(j)));
+			dynamicProcessingTimes.add(ArrayListUtils.transpose(processingT));
 		}
 		
 	}
@@ -130,8 +133,8 @@ public class RotationDynamism extends DynamicFSP{
 	public void printDynamicInstance(){
 		DecimalFormat df = new DecimalFormat("#.####");
 		System.out.println(numberOfChanges);
-		for(int i = 0; i < staticSequenceTimes.length; i++)
-			System.out.println(df.format(staticSequenceTimes[i]) + ";" + ArrayUtils.tableToString(permutations[i])); 
+		for(int i = 0; i < staticSequenceTimes.size(); i++)
+			System.out.println(df.format(staticSequenceTimes.get(i).doubleValue()) + ";" + ArrayUtils.tableToString(ArrayUtils.arrayListToIntegerArray(permutations.get(i)))); 
 	}
 
 
@@ -142,11 +145,11 @@ public class RotationDynamism extends DynamicFSP{
 			DecimalFormat df = new DecimalFormat("#.####");
 			String output = "Number of changes, number of job, number of machines \n";
 			output += numberOfChanges + "\t\t\t" + schedulingProblem.jobs + "\t\t\t" + schedulingProblem.machines + "\n";
-			for (int i = 0; i < staticSequenceTimes.length; i++){
-				output += "Change time:" + df.format(staticSequenceTimes[i]) +"\n Processing times: \n";
+			for (int i = 0; i < staticSequenceTimes.size(); i++){
+				output += "Change time:" + df.format(staticSequenceTimes.get(i)) +"\n Processing times: \n";
 				for (int j = 0; j < schedulingProblem.machines; j++) {
 					for (int k = 0; k < schedulingProblem.jobs; k++)
-						output += dynamicProcessingTimes[i][j][k] + "\t";
+						output += dynamicProcessingTimes.get(i).get(j).get(k) + "\t";
 					output += "\n";
 				} 
 			}

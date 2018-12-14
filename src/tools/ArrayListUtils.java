@@ -11,6 +11,13 @@ public class ArrayListUtils {
 			al.add(element);
 		return al;
 	}
+	
+	public static ArrayList<Integer> arrayToArrayList(int[] array){
+		ArrayList<Integer> al = new ArrayList<>();
+		for (int element : array)
+			al.add(element);
+		return al;
+	}
 
 	public static void addArray(ArrayList<Double> list, double[] array){
 		for (double element : array)
@@ -86,6 +93,14 @@ public class ArrayListUtils {
 	
 	public static int indexOfMax(ArrayList<Double> vals){
 		return vals.indexOf(max(vals));
+	}
+	
+	public static <T> ArrayList<ArrayList<T>> deepCopy(ArrayList<ArrayList<T>> source) {
+	    ArrayList<ArrayList<T>> dest = new ArrayList<ArrayList<T>>();
+	    for(ArrayList<T> innerList : source) {
+	        dest.add(new ArrayList<T>(innerList));
+	    }
+	    return dest;
 	}
 	
 }

@@ -24,6 +24,22 @@ public class ArrayUtils {
 		}
 		return arr;
 	}
+	
+	public static double[] copyFromIntArray(int[] source) {
+	    double[] dest = new double[source.length];
+	    for(int i=0; i<source.length; i++) {
+	        dest[i] = source[i];
+	    }
+	    return dest;
+	}
+	
+	public static int[] copyFromDoubleArray(double[] source) {
+	    int[] dest = new int[source.length];
+	    for(int i=0; i<source.length; i++) {
+	        dest[i] = (int)source[i];
+	    }
+	    return dest;
+	}
 
 	public static String tableToString(Object obj){
 		return tableToString(obj, ",");

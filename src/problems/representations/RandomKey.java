@@ -1,4 +1,4 @@
-package representations;
+package problems.representations;
 
 import java.util.ArrayList;
 

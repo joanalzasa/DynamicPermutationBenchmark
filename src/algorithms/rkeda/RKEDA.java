@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import algorithms.EvolutionaryAgorithm;
 import algorithms.rkeda.coolings.Cooling;
-import representations.RandomKey;
+import problems.representations.RandomKey;
 
 public class RKEDA extends EvolutionaryAgorithm<RandomKey>{
 
