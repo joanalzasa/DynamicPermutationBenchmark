@@ -1,8 +1,5 @@
 package benchmarkGenerators;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,9 +31,9 @@ public class InsertionEliminationDynamism extends DynamicFSP {
 			generatePoissonProcess();
 		magnitude = multiplier;	
 		schedulingProblem = problem;
+		dynamicProblem = problem;
 		
 		changingAmount = changingMachines;
-		dynamicProblem = problem;
 		
 		// Initialise changeables
 		decisionsBool = new ArrayList<>();
@@ -105,29 +102,5 @@ public class InsertionEliminationDynamism extends DynamicFSP {
 			System.out.println(df.format(staticSequenceTimes.get(i + 1)) + ";" + decisionsBool.get(i) + ";" + machinePositions.get(i).toString()); 
 		}
 	}
-	
-	@Override
-	public void createDynamicInstance(String path, String saveAs) {
-		try {
-			BufferedWriter br = new BufferedWriter(new FileWriter(path + "" + saveAs));
-			DecimalFormat df = new DecimalFormat("#.####");
-			String output = "Number of changes, number of job, number of machines \n";
-			output += numberOfChanges + "\t\t\t" + schedulingProblem.jobs + "\t\t\t" + schedulingProblem.machines + "\n";
-			for (int i = 0; i < staticSequenceTimes.size(); i++){
-				output += "Change time:" + df.format(staticSequenceTimes.get(i)) +"\n Processing times: \n";
-				for (int j = 0; j < dynamicProcessingTimes.get(i).size(); j++) {
-					for (int k = 0; k < dynamicProcessingTimes.get(i).get(j).size(); k++)
-						output += dynamicProcessingTimes.get(i).get(j).get(k) + "\t";
-					output += "\n";
-				} 
-			}
-			br.write(output);
-	        br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-	}
-
-
 	
 }

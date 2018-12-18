@@ -6,6 +6,8 @@
 package launchers;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import benchmarkGenerators.Dynamism;
 import benchmarkGenerators.InsertionEliminationDynamism;
@@ -18,7 +20,9 @@ public class mainDynamicBG{
 	public static void main(String[] args) throws IOException{
 		
 		// STATIC PROBLEM
-		String staticProblemPath = "./inputData/instances/FSP/tai20_5_0.fsp";
+		String staticProblemPath = "./inputData/instances/FSP/tai20_10_0.fsp";
+		int nameInstance = staticProblemPath.split("/").length - 1;
+		String instance = staticProblemPath.split("/")[nameInstance].substring(0, staticProblemPath.split("/")[nameInstance].lastIndexOf("."));
 		
 		// DYNAMISM PARAMETERS:
 //		String changeType = "rotation";
@@ -29,7 +33,7 @@ public class mainDynamicBG{
 //		String changeFrequency = "periodical";
 		int numOfChanges = 2;
 		String changeFrequency = "poisson";
-		double lambda = 3;
+		double lambda = 5;
 		
 		int changeMagnitude = 1;
 		String resultsPath = "./inputData/dynamicInstances/";
@@ -42,43 +46,36 @@ public class mainDynamicBG{
 		PFSP.read(staticProblemPath);
 		
 		Dynamism dynamicInstance;
-		saveAs = "DFSP-" + PFSP.jobs + "x" + PFSP.machines + "-";
+		saveAs = "dynamic_" + instance +"-";
 		if(changeType.contains("rotation")){
-			saveAs += "Cr-M" + changeMagnitude;	
-			dynamicInstance = new RotationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, PFSP, "cayley");
-			if (changeFrequency.contains("periodical"))
-				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
-			else
-				saveAs += "-T" + dynamicInstance.numberOfChanges +".dfsp";
-			
+			Files.createDirectories(Paths.get("./inputData/dynamicInstances/rotation/" + instance));
+			resultsPath += "rotation/" + instance + "/";
+			saveAs += "Cr-M" + changeMagnitude + "-T";	
+			dynamicInstance = new RotationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, PFSP, "cayley");			
 			dynamicInstance.generateDynamism();
 			dynamicInstance.printDynamicInstance();
 			dynamicInstance.getDynamicProcessingTimes();
-			dynamicInstance.createDynamicInstance(resultsPath, saveAs);
+			dynamicInstance.createDynamicInstance(instance, resultsPath, saveAs);
 		}else if(changeType.contains("insertRemove")){
-			saveAs += "Ci-M" + changeMagnitude;	
+			Files.createDirectories(Paths.get("./inputData/dynamicInstances/insertion/" + instance));
+			resultsPath += "insertion/" + instance + "/";
+			saveAs += "Ci-M" + changeMagnitude + "-T";	
 			int changingAmount = 1;
 			dynamicInstance = new InsertionEliminationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingAmount, PFSP);
-			if (changeFrequency.contains("periodical"))
-				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
-			else
-				saveAs += "-T" + dynamicInstance.numberOfChanges +".dfsp";	
 			dynamicInstance.generateDynamism();
 			dynamicInstance.printDynamicInstance();
 			dynamicInstance.getDynamicProcessingTimes();
-			dynamicInstance.createDynamicInstance(resultsPath, saveAs);
+			dynamicInstance.createDynamicInstance(instance, resultsPath, saveAs);
 		}else if(changeType.contains("modification")){
-			saveAs += "Cm-M" + changeMagnitude;	
+			Files.createDirectories(Paths.get("./inputData/dynamicInstances/modification/" + instance));
+			resultsPath += "modification/" + instance + "/";
+			saveAs += "Cm-M" + changeMagnitude + "-T";	
 			double changingPercentage = 0.2;
-			dynamicInstance = new ModificationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingPercentage, PFSP);
-			if (changeFrequency.contains("periodical"))
-				saveAs += "-Tp" + dynamicInstance.numberOfChanges + ".dfsp" ;
-			else
-				saveAs += "-T" + dynamicInstance.numberOfChanges +".dfsp";	
+			dynamicInstance = new ModificationDynamism(numOfChanges, changeFrequency, changeMagnitude, lambda, changingPercentage, PFSP);	
 			dynamicInstance.generateDynamism();
 			dynamicInstance.printDynamicInstance();
 			dynamicInstance.getDynamicProcessingTimes();
-			dynamicInstance.createDynamicInstance(resultsPath, saveAs);
+			dynamicInstance.createDynamicInstance(instance, resultsPath, saveAs);
 		}
 		
 		

@@ -2,6 +2,7 @@ package tools;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ArrayListUtils {
 
@@ -41,19 +42,16 @@ public class ArrayListUtils {
 	}
 	
 	public static <E> double mean(ArrayList<E> vals){
+	  return sum(vals)/vals.size();
+	}
+	
+	public static <E> double sum(ArrayList<E> vals){
 		double sum = 0;
 		if(!vals.isEmpty()) {
 		    for (int i = 0; i < vals.size() ; i++)
 				sum += Double.valueOf(vals.get(i).toString());
 		    return sum / (double) vals.size();
 	    }
-	  return sum;
-	}
-	
-	public static double sum(ArrayList<Double> vals){
-		double sum = 0;
-		for(double d : vals)
-		    sum += d;
 		return sum;
 	}
 
@@ -64,35 +62,13 @@ public class ArrayListUtils {
 			thevalue = thevalue + Math.pow(vals.get(i) - mean, 2);
 		return Math.sqrt(thevalue/vals.size());
 	}
-
-	public static double min(ArrayList<Double> vals){
-		double rval = Double.NaN;
-		if(!vals.isEmpty()) {
-			for(double d : vals){
-				if (!(rval < d))
-					rval = d;
-			}
-	    }
-		return rval;
-	}
 	
 	public static int indexOfMin(ArrayList<Double> vals){
-		return vals.indexOf(min(vals));
-	}
-
-	public static double max(ArrayList<Double> vals){
-		double rval = Double.NaN;
-		if(!vals.isEmpty()) {
-			for(double d : vals){
-				if (!(rval > d))
-					rval = d;
-			}
-	    }
-		return rval;
+		return vals.indexOf(Collections.min(vals));
 	}
 	
 	public static int indexOfMax(ArrayList<Double> vals){
-		return vals.indexOf(max(vals));
+		return vals.indexOf(Collections.max(vals));
 	}
 	
 	public static <T> ArrayList<ArrayList<T>> deepCopy(ArrayList<ArrayList<T>> source) {
@@ -103,4 +79,13 @@ public class ArrayListUtils {
 	    return dest;
 	}
 	
+	public static ArrayList<Integer> cumSum(ArrayList<Integer> vals) {
+	    ArrayList<Integer> dest = new ArrayList<>();
+	    int sum = 0;
+	    for(int i = 0; i<vals.size(); i++) {
+	        dest.add(vals.get(i) + sum );
+	        sum = dest.get(i);
+	    }
+	    return dest;
+	}
 }

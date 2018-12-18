@@ -5,19 +5,26 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+//import java.util.Collections;
+
+import problems.representations.Permutation;
+import tools.ArrayListUtils;
+import tools.PermutationUtils;
 
 public class FSP extends PermutationProblem implements OptimisationProblem{
 
 	public int jobs;
 	public int machines;
 	public ArrayList<ArrayList<Integer>> processingTimes;
-	int seed;
+//	int seed;
+	
+	public FSP(){
+		processingTimes = new ArrayList<ArrayList<Integer>>();
+	}
 	
 	@SuppressWarnings("resource")
 	@Override
 	public void read(String fileName) {
-
-		processingTimes = new ArrayList<ArrayList<Integer>>();
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(fileName)));
 
@@ -29,8 +36,8 @@ public class FSP extends PermutationProblem implements OptimisationProblem{
 					String[] information = line.trim().split("\\s+");
 					jobs = Integer.parseInt(information[0]);
 					machines = Integer.parseInt(information[1]);
-					seed = Integer.parseInt(information[2]);
-					globalOptimum = Double.parseDouble(information[3]);
+//					seed = Integer.parseInt(information[2]);
+//					globalOptimum = Double.parseDouble(information[3]);
 				}
 				if (counter > 2 && counter <= (machines + 2)) {
 					ArrayList<Integer> arr = new ArrayList<Integer>();
@@ -51,60 +58,36 @@ public class FSP extends PermutationProblem implements OptimisationProblem{
 			
 			// Initialisation
 			problemSize = jobs;
+			identityPermutation = PermutationUtils.generateIdentityPermutation(problemSize);
 		} catch (IOException e) {
 			System.out.println("Couldn't find file: " + fileName);
 		}
 	}
 	
 	@Override
-	public double evaluate(ArrayList<?> population) {
-//		int m_machines = processingTimes.length;
-//		int m_jobs = processingTimes[0].length;
-//		int[] m_timeTable = new int[m_machines];
-//		// int[] m_aux= new int[m_jobs];
-//
-//		for (int i = 0; i < m_machines; i++)
-//			m_timeTable[i] = 0;
-//		int j, z, job;
-//		int machine;
-//		int prev_machine = 0;
-//
-//		// int first_gene=genes[0];
-//		int first_gene = this.identityPerm[genes[0]];
-//
-//		m_timeTable[0] = processingTimes[0][first_gene];
-//		for (j = 1; j < m_machines; j++) {
-//			m_timeTable[j] = m_timeTable[j - 1] + processingTimes[j][first_gene];
-//		}
-//
-//		double fitness = m_timeTable[m_machines - 1];
-//		for (z = 1; z < m_jobs; z++) {
-//			// job=genes[z];
-//			job = this.identityPerm[genes[z]];
-//
-//			// machine 0 is always incremental, so:
-//			m_timeTable[0] += processingTimes[0][job];
-//			prev_machine = m_timeTable[0];
-//			for (machine = 1; machine < m_machines; machine++) {
-//				m_timeTable[machine] = Math.max(prev_machine, m_timeTable[machine]) + processingTimes[machine][job];
-//				prev_machine = m_timeTable[machine];
-//			}
-//
-//			fitness += m_timeTable[m_machines - 1];
-//		}
-//
-//		// return -fitness;
-//		return fitness;
-		return 0;
+	public void evaluate(Permutation individual) {
+		ArrayList<ArrayList<Integer>> transposedProcessingTimes = ArrayListUtils.transpose(processingTimes);
+		
+		ArrayList<Integer> totalFlowTime = ArrayListUtils.cumSum(transposedProcessingTimes.get(identityPermutation.get(individual.getSolution().get(0))));
+
+		for (int j = 1; j < jobs; j++) {
+			totalFlowTime.set(0, totalFlowTime.get(0) + transposedProcessingTimes.get(identityPermutation.get(individual.getSolution().get(j))).get(0));
+			for (int m = 1; m < machines; m++) {
+				int max = Math.max(totalFlowTime.get(m-1),totalFlowTime.get(m)); 
+				totalFlowTime.set(m, max + transposedProcessingTimes.get(identityPermutation.get(individual.getSolution().get(j))).get(m));
+			}
+		}
+		
+		individual.setFitness(totalFlowTime.get(totalFlowTime.size() - 1));
 	}
 
-	public int getSeed() {
-		return seed;
-	}
-
-	public void setSeed(int seed) {
-		this.seed = seed;
-	}
+//	public int getSeed() {
+//		return seed;
+//	}
+//
+//	public void setSeed(int seed) {
+//		this.seed = seed;
+//	}
 
 
 }

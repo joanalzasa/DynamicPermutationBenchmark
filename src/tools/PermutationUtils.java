@@ -25,7 +25,7 @@ public class PermutationUtils {
 	
 	public static ArrayList<Integer> generateIdentityPermutation(int n){
 		ArrayList<Integer> identityPerm = new ArrayList<Integer>();
-		for (int i = 0; i < identityPerm.size(); i++)
+		for (int i = 0; i < n; i++)
 			identityPerm.add(i);
 		return identityPerm;
 	}

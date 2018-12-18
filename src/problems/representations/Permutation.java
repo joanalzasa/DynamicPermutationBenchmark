@@ -14,6 +14,11 @@ public class Permutation {
 		this.gene = new ArrayList<Integer>();
 	}
 	
+	public Permutation(ArrayList<Integer> solution){
+		this.gene = solution;
+		this.size = this.gene.size();
+	}
+	
 	public Permutation(ArrayList<Integer> solution, double fitness){
 		this.gene = solution;
 		this.fitness = fitness;

@@ -5,9 +5,6 @@
  */
 package benchmarkGenerators;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +17,7 @@ import tools.PermutationUtils;
 
 public class RotationDynamism extends DynamicFSP{
 
+	FSP dynamicProblem;
 	String distanceType;
 	ArrayList<ArrayList<Integer>> permutations;
 	
@@ -39,6 +37,7 @@ public class RotationDynamism extends DynamicFSP{
 			generatePoissonProcess();	
 		magnitude = distance;
 		schedulingProblem = problem;
+		dynamicProblem = problem;
 				
 		distanceType = type;
 		
@@ -76,7 +75,8 @@ public class RotationDynamism extends DynamicFSP{
 			ArrayList<ArrayList<Integer>> processingT = new ArrayList<>();
 			for (int j = 0; j < schedulingProblem.jobs; j++)
 				processingT.add(transposedProcessingT.get(permutations.get(i).indexOf(j)));
-			dynamicProcessingTimes.add(ArrayListUtils.transpose(processingT));
+			dynamicProblem.processingTimes = ArrayListUtils.transpose(processingT);
+			dynamicProcessingTimes.add(ArrayListUtils.deepCopy((dynamicProblem.processingTimes)));
 		}
 		
 	}
@@ -135,29 +135,6 @@ public class RotationDynamism extends DynamicFSP{
 		System.out.println(numberOfChanges);
 		for(int i = 0; i < staticSequenceTimes.size(); i++)
 			System.out.println(df.format(staticSequenceTimes.get(i).doubleValue()) + ";" + ArrayUtils.tableToString(ArrayUtils.arrayListToIntegerArray(permutations.get(i)))); 
-	}
-
-
-	@Override
-	public void createDynamicInstance(String path, String saveAs) {
-		try {
-			BufferedWriter br = new BufferedWriter(new FileWriter(path + "" + saveAs));
-			DecimalFormat df = new DecimalFormat("#.####");
-			String output = "Number of changes, number of job, number of machines \n";
-			output += numberOfChanges + "\t\t\t" + schedulingProblem.jobs + "\t\t\t" + schedulingProblem.machines + "\n";
-			for (int i = 0; i < staticSequenceTimes.size(); i++){
-				output += "Change time:" + df.format(staticSequenceTimes.get(i)) +"\n Processing times: \n";
-				for (int j = 0; j < schedulingProblem.machines; j++) {
-					for (int k = 0; k < schedulingProblem.jobs; k++)
-						output += dynamicProcessingTimes.get(i).get(j).get(k) + "\t";
-					output += "\n";
-				} 
-			}
-			br.write(output);
-	        br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
 	}
 
 }

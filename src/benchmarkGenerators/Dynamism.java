@@ -20,7 +20,7 @@ public abstract class Dynamism {
 	public abstract void generateDynamism();
 	public abstract void getDynamicProcessingTimes();
 	public abstract void printDynamicInstance();
-	public abstract void createDynamicInstance(String resultsPath, String saveAs);
+	public abstract void createDynamicInstance(String instance, String resultsPath, String saveAs);
 	
 	// Other methods
 	public void generatePeriodicalChanges(){
